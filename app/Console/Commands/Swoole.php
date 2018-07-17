@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use swoole_websocket_server;
 
 class Swoole extends Command
 {
@@ -41,6 +42,7 @@ class Swoole extends Command
         switch ($arg) {
             case 'start':
                 $this->info('swoole server started');
+                $this->start();
                 break;
             case 'stop':
                 $this->info('swoole server stoped');
@@ -49,5 +51,27 @@ class Swoole extends Command
                 $this->info('swoole server restarted');
                 break;
         }
+    }
+
+    private function start(){
+        $ws = new swoole_websocket_server("0.0.0.0", 9502);
+
+        //监听WebSocket连接打开事件
+        $ws->on('open', function ($ws, $request) {
+            $this->info("client is open\n");
+        });
+
+        //监听WebSocket消息事件
+        $ws->on('message', function ($ws, $frame) {
+            var_dump($frame);
+            $ws->push($frame->fd, "server: {$frame->data}");
+        });
+
+        //监听WebSocket连接关闭事件
+        $ws->on('close', function ($ws, $fd) {
+            $this->info("client is close\n");
+        });
+
+        $ws->start();
     }
 }
