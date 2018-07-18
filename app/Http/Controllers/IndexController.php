@@ -47,4 +47,36 @@ class IndexController extends Controller
     }
 
 
+    /**
+     * 获取用户信息
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function me()
+    {
+        return response()->json(Auth::guard('api')->user());
+    }
+
+
+    /**
+     * 退出登录并且清除Token值
+     */
+    public function logout()
+    {
+        Auth::guard('api')->logout();
+
+        return response()->json(['message' => 'Successfully logged out']);
+    }
+
+
+    /**
+     * 刷新Token值
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function refresh()
+    {
+        return $this->respondWithToken(Auth::guard('api')->refresh());
+    }
+
+
 }
