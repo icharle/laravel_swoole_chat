@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Socialite;
+use App\User;
 
 class IndexController extends Controller
 {
@@ -23,7 +24,14 @@ class IndexController extends Controller
     public function callback()
     {
         $info = Socialite::driver('qq')->user();
-        dd($info);
+
+        $OpenID = $info['id'];                  //用户唯一标识
+        $NickName = $info['nickname'];          //用户用户名
+        $Avatar = $info['avatar'];              //用户头像
+
+        User::create(['NickName' => $NickName,'OpenID' =>$OpenID,'Avatar'=>$Avatar]);
+
+
     }
 
 
