@@ -53,7 +53,8 @@ class Swoole extends Command
         }
     }
 
-    private function start(){
+    private function start()
+    {
         $ws = new swoole_websocket_server("0.0.0.0", 9502);
 
         //监听WebSocket连接打开事件
@@ -63,8 +64,17 @@ class Swoole extends Command
 
         //监听WebSocket消息事件
         $ws->on('message', function ($ws, $frame) {
-            var_dump($frame);
-            $ws->push($frame->fd, "server: {$frame->data}");
+
+            $data = json_decode($frame->data, true);        //收到发送数据
+
+            //广播(除开自己本身)
+            foreach ($ws->connections as $i) {
+                if ($i == $frame->fd) {
+                    continue;
+                }
+                $ws->push($i, $data['content']);
+            }
+
         });
 
         //监听WebSocket连接关闭事件
