@@ -12,9 +12,8 @@ class IndexController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['qq','callback']]);
+        $this->middleware('auth:api', ['except' => ['qq', 'callback']]);
     }
-
     /**
      * QQ授权页面
      */
@@ -36,14 +35,24 @@ class IndexController extends Controller
         $Avatar = $info->avatar;              //用户头像
 
         $user = User::updateOrCreate(
-            ['OpenID' =>$OpenID],
-            ['NickName' => $NickName,'Avatar'=>$Avatar]);       //入库处理
+            ['OpenID' => $OpenID],
+            ['NickName' => $NickName, 'Avatar' => $Avatar]);       //入库处理
 
-         //返回JWT token值
-        if (! $token = Auth::guard('api')->fromUser($user)) {
+        //返回JWT token值
+        if (!$token = Auth::guard('api')->fromUser($user)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        return $this->respondWithToken($token);
+        echo "<script>window.close();</script>";       //授权成功后关闭页面
+
+//        return redirect('/')->with('status', 'Profile updated!');
+
+//        return redirect("chat", compact('token'));
+
+//        dd($token);
+
+//        return redirect('/')->with('status', $token);
+
+//        return $this->respondWithToken($token);
     }
 
 
