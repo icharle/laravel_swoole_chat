@@ -6,17 +6,11 @@
 </head>
 <body>
 
-@if (session('status'))
-    <div class="alert alert-success">
-        {{ session('status') }}
-    </div>
-@endif
-
 <a onclick='toQQLogin()'>QQ登录</a>
 
 <script>
     function toQQLogin() {
-        var _url="http://chat.test/api/qq";  //转向网页的地址;
+        var _url="http://chat.test/qq";  //转向网页的地址;
         var name='QQ授权登录';    //网页名称，可为空;
         var iWidth=800; //弹出窗口的宽度;
         var iHeight=600;   //弹出窗口的高度;

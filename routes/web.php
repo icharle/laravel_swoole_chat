@@ -19,3 +19,10 @@ Route::get('/', function () {
 Route::get('/chat', function () {
     return view('chat');
 });
+
+Route::group(['middleware' => 'web'], function () {
+
+    Route::get('qq', 'IndexController@qq');
+    Route::get('callback', 'IndexController@callback');
+
+});

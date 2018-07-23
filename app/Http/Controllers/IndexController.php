@@ -14,6 +14,7 @@ class IndexController extends Controller
     {
         $this->middleware('auth:api', ['except' => ['qq', 'callback']]);
     }
+
     /**
      * QQ授权页面
      */
@@ -44,13 +45,7 @@ class IndexController extends Controller
         }
         echo "<script>window.close();</script>";       //授权成功后关闭页面
 
-//        return redirect('/')->with('status', 'Profile updated!');
-
-//        return redirect("chat", compact('token'));
-
-//        dd($token);
-
-//        return redirect('/')->with('status', $token);
+        return redirect('/chat')->with('token', $token);
 
 //        return $this->respondWithToken($token);
     }

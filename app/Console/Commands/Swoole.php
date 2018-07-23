@@ -66,6 +66,7 @@ class Swoole extends Command
         $ws->on('message', function ($ws, $frame) {
 
             $data = json_decode($frame->data, true);        //收到发送数据
+            
 
             //广播(除开自己本身)
             foreach ($ws->connections as $i) {

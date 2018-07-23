@@ -7,7 +7,7 @@
 <body>
 
 @if (session('token'))
-    <input type="hidden" name="token" value="{{ session('token') }}"/>
+    <div>{{ session('token') }}</div>
 @endif
 
 <div id="msg"></div>
@@ -40,6 +40,7 @@
         //向服务器发送数据
         var data = {
             content: text,
+            token: 'bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9jaGF0LnRlc3RcL2FwaVwvY2FsbGJhY2siLCJpYXQiOjE1MzIzMzE3NDcsImV4cCI6MTUzMjMzNTM0NywibmJmIjoxNTMyMzMxNzQ3LCJqdGkiOiJWY2J0ZHAzc2gxdld4OUt3Iiwic3ViIjoxLCJwcnYiOiI4N2UwYWYxZWY5ZmQxNTgxMmZkZWM5NzE1M2ExNGUwYjA0NzU0NmFhIn0.MRfiAJWqiADeHMdCOIM5Xux32NJ8yKzlT7PWbZT0eos'
         };
         websocket.send(JSON.stringify(data));
 
