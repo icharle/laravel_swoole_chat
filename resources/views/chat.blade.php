@@ -33,18 +33,20 @@
         msg.innerHTML = websocket.readyState;
     };
 
-    function song(){
+    function song() {
         var text = document.getElementById('text').value;
         document.getElementById('text').value = '';
 
         //向服务器发送数据
         var data = {
             content: text,
-            token: 'bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9jaGF0LnRlc3RcL2FwaVwvY2FsbGJhY2siLCJpYXQiOjE1MzIzMzE3NDcsImV4cCI6MTUzMjMzNTM0NywibmJmIjoxNTMyMzMxNzQ3LCJqdGkiOiJWY2J0ZHAzc2gxdld4OUt3Iiwic3ViIjoxLCJwcnYiOiI4N2UwYWYxZWY5ZmQxNTgxMmZkZWM5NzE1M2ExNGUwYjA0NzU0NmFhIn0.MRfiAJWqiADeHMdCOIM5Xux32NJ8yKzlT7PWbZT0eos'
+            user_name: "Pad",
+            avatar: "http://thirdqq.qlogo.cn/qqapp/101490714/69831B78F073A55BE8CAA9B8BDED0BA1/100"
         };
         websocket.send(JSON.stringify(data));
 
     }
+
     //监听连接关闭
     //    websocket.onclose = function (evt) {
     //        console.log("Disconnected");
@@ -52,8 +54,9 @@
 
     //onmessage 监听服务器数据推送
     websocket.onmessage = function (evt) {
-        msg.innerHTML += evt.data +'<br>';
-//        console.log('Retrieved data from server: ' + evt.data);
+        var bigImg = document.createElement("img");
+        bigImg.src = evt.data;
+        msg.appendChild(bigImg);
     };
     //监听连接错误信息
     //    websocket.onerror = function (evt, e) {

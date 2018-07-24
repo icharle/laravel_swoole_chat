@@ -73,7 +73,7 @@ class Swoole extends Command
                 if ($i == $frame->fd) {
                     continue;
                 }
-                $ws->push($i, $data['content']);
+                $ws->push($i, $data['avatar']);
             }
 
         });
