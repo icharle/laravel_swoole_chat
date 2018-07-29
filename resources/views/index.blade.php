@@ -6,7 +6,8 @@
 </head>
 <body>
 
-<a onclick='toQQLogin()'>QQ登录</a>
+{{--<a onclick='toQQLogin()'>QQ登录</a>--}}
+<a href="http://chat.test/qq">QQ登录</a>
 
 <script>
     function toQQLogin() {

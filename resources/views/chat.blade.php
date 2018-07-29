@@ -2,66 +2,65 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>聊天室</title>
+    <script src="https://cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
 </head>
 <body>
 
-@if (session('token'))
-    <div>{{ session('token') }}</div>
-@endif
-
 <div id="msg"></div>
 <input type="text" id="text">
-<input type="submit" value="发送数据" onclick="song()">
+<input type="submit" value="发送数据" id="send">
 </body>
+
 <script>
-    document.querySelector("body").style.fontSize = '28px';
-    var msg = document.getElementById("msg");
-    var wsServer = 'ws://chat.test:9502/'
-    //调用websocket对象建立连接：
-    //参数：ws/wss(加密)：//ip:port （字符串）
-    var websocket = new WebSocket(wsServer);
-    //onopen监听连接打开
-    websocket.onopen = function (evt) {
-        //websocket.readyState 属性：
-        /*
-        CONNECTING    0    The connection is not yet open.
-        OPEN    1    The connection is open and ready to communicate.
-        CLOSING    2    The connection is in the process of closing.
-        CLOSED    3    The connection is closed or couldn't be opened.
-        */
-        msg.innerHTML = websocket.readyState;
-    };
+    wsServer = new WebSocket("ws://127.0.0.1:9502");
 
-    function song() {
-        var text = document.getElementById('text').value;
-        document.getElementById('text').value = '';
-
-        //向服务器发送数据
-        var data = {
-            content: text,
-            user_name: "Pad",
-            avatar: "http://thirdqq.qlogo.cn/qqapp/101490714/69831B78F073A55BE8CAA9B8BDED0BA1/100"
+    // 开启连接
+    wsServer.onopen = function () {
+        let data = {
+            name: '69831B78F073A55BE8CAA9B8BDED0BA1',           //开发先临时写死
+            type: 'connect'
         };
-        websocket.send(JSON.stringify(data));
-
+        wsServer.send(JSON.stringify(data));
     }
 
-    //监听连接关闭
-    //    websocket.onclose = function (evt) {
-    //        console.log("Disconnected");
-    //    };
-
-    //onmessage 监听服务器数据推送
-    websocket.onmessage = function (evt) {
-        var bigImg = document.createElement("img");
-        bigImg.src = evt.data;
-        msg.appendChild(bigImg);
+    // 交流通信
+    wsServer.onmessage = function (evt) {
+        let data = JSON.parse(evt);
+        if (data.type == "join") {                  // 加入群聊情况
+            $('#msg').append('<div> <img src="' + data.avatar + '"> <span>欢迎' + data.name + '加入群聊</span> </div>');
+        }
+        else if (data.type == "message") {           // 发送信息情况
+            $('#msg').append('<div> <img src="' + data.avatar + '"> <span>' + data.name + '</span><br> <span>' + data.content + '</span> </div>');
+        }
+        else if (data.type == "leave") {            // 离开群聊情况
+            $('#msg').append('<div> <img src="' + data.avatar + '"> <span>' + data.name + '离开群聊</span> </div>');
+        }
     };
-    //监听连接错误信息
-    //    websocket.onerror = function (evt, e) {
-    //        console.log('Error occured: ' + evt.data);
-    //    };
 
+    // 手动发送信息
+    $('#send').click(function (e) {
+        let data = {
+            message: '嘤嘤嘤嘤嘤嘤嘤',                            //开发先临时写死
+            name: '69831B78F073A55BE8CAA9B8BDED0BA1',           //开发先临时写死
+            type: 'message'
+        };
+        ws.send(JSON.stringify(data));
+        // TODO 清空输入框
+    });
+
+    // 关闭连接
+    wsServer.onclose = function () {
+        let data = {
+            name: '69831B78F073A55BE8CAA9B8BDED0BA1',          //开发先临时写死
+            type: 'leave'
+        };
+        wsServer.send(JSON.stringify(data));
+    };
+
+    // 出现错误
+    wsServer.onerror = function () {
+        console.log("未知错误！");
+    };
 </script>
 </html>
