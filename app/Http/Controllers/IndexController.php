@@ -43,9 +43,9 @@ class IndexController extends Controller
         if (!$token = Auth::guard('api')->fromUser($user)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        echo "<script>window.close();</script>";       //授权成功后关闭页面
+//        echo "<script>window.close();</script>";       //授权成功后关闭页面
 
-        return redirect('/chat')->with('token', $token);
+        return redirect('/chat')->with('token', 'bearer ' . $token);
 
 //        return $this->respondWithToken($token);
     }
