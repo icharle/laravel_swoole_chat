@@ -82,15 +82,17 @@ class Swoole extends Command
 
             } elseif ($data['type'] == "message") {                 //普通信息类型
                 $this->send($ws, $res, $data['message'], 'message');           //群发信息
-            } elseif ($data['type'] == "leave") {                   //离开房间类型
-                Redis::zrem("room", $frame->fd);                                   //移除用户
-                $this->send($ws, $res, '', 'leave');           //群发信息
             }
         });
 
         //监听WebSocket连接关闭事件
         $ws->on('close', function ($ws, $fd) {
             $this->info("client is close\n");
+            $data['name'] = intval(Redis::zscore("room", $fd));                     //获取该连接对应的用户信息
+            $res = $this->user->where('OpenID', $data['name'])->first();
+            Redis::zrem("room", $fd);                                               //移除用户
+            $onlinenum = Redis::zcard("room");                          //统计该房间总人数
+            $this->send($ws, $res, $onlinenum, 'leave');           //群发信息
         });
 
         $ws->start();
@@ -109,14 +111,14 @@ class Swoole extends Command
             'message' => is_string($content) ? nl2br($content) : $content,
             'type' => $type,
             'user' => array(
-                'name' => $userinfo['NickName'],
-                'avatar' => $userinfo['Avatar']
+                'name' => $userinfo['NickName'],                    //用户名称
+                'avatar' => $userinfo['Avatar']                     //用户头像
             )
         ]);
-        $members = Redis::zrange("room", 0, -1);
+        $members = Redis::zrange("room", 0, -1);                    //所有在房间的用户fd
 
         foreach ($members as $fd) {
-            $ws->push(intval($fd), $message);
+            $ws->push(intval($fd), $message);                       //每个用户发送信息
         }
     }
 }
