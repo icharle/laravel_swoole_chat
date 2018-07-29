@@ -7,6 +7,7 @@
 </head>
 <body>
 
+<div id="chat_nums">0人</div>
 <div id="msg"></div>
 <input type="text" id="text">
 <input type="submit" value="发送数据" id="send">
@@ -26,15 +27,17 @@
 
     // 交流通信
     wsServer.onmessage = function (evt) {
-        let data = JSON.parse(evt);
+        let data = JSON.parse(evt.data);
         if (data.type == "join") {                  // 加入群聊情况
-            $('#msg').append('<div> <img src="' + data.avatar + '"> <span>欢迎' + data.name + '加入群聊</span> </div>');
+            $('#msg').append('<div> <img src="' + data.user.avatar + '"> <span>欢迎' + data.user.name + '加入群聊</span> </div>');
+            $("#chat_nums").html(data.message + "人");
         }
         else if (data.type == "message") {           // 发送信息情况
-            $('#msg').append('<div> <img src="' + data.avatar + '"> <span>' + data.name + '</span><br> <span>' + data.content + '</span> </div>');
+            $('#msg').append('<div> <img src="' + data.user.avatar + '"> <span>' + data.user.name + '</span><br> <span>' + data.message + '</span> </div>');
         }
         else if (data.type == "leave") {            // 离开群聊情况
-            $('#msg').append('<div> <img src="' + data.avatar + '"> <span>' + data.name + '离开群聊</span> </div>');
+            $('#msg').append('<div> <img src="' + data.user.avatar + '"> <span>' + data.user.name + '离开群聊</span> </div>');
+            $("#chat_nums").html(data.message + "人");
         }
     };
 
@@ -45,7 +48,7 @@
             name: '69831B78F073A55BE8CAA9B8BDED0BA1',           //开发先临时写死
             type: 'message'
         };
-        ws.send(JSON.stringify(data));
+        wsServer.send(JSON.stringify(data));
         // TODO 清空输入框
     });
 

@@ -4,10 +4,15 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use swoole_websocket_server;
+use Illuminate\Support\Facades\Redis;
 use App\User;
 
 class Swoole extends Command
 {
+    /**
+     * @var User
+     */
+    protected $user;
     /**
      * The name and signature of the console command.
      *
@@ -27,9 +32,10 @@ class Swoole extends Command
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(User $user)
     {
         parent::__construct();
+        $this->user = $user;
     }
 
     /**
@@ -67,10 +73,10 @@ class Swoole extends Command
         $ws->on('message', function ($ws, $frame) {
             $data = json_decode($frame->data, true);        //收到发送数据
 
-            $res = User::where('OpenID', $data['name'])->get(['Avatar', 'NickName', 'OpenID']);
+            $res = $this->user->where('OpenID', $data['name'])->first();
 
             if ($data['type'] == "connect") {                      //加入房间类型
-                Redis::zadd("room", $res['OpenID'], $frame->id);            //绑定用户openID值以及回话ID
+                Redis::zadd("room", intval($res['OpenID']), $frame->fd);            //绑定用户openID值以及回话ID
                 $onlinenum = Redis::zcard("room");                          //统计该房间总人数
                 $this->send($ws, $res, $onlinenum, 'join');           //群发信息
 
@@ -100,16 +106,17 @@ class Swoole extends Command
     private function send($ws, $userinfo, $content, $type)
     {
         $message = json_encode([
-            'message' => $content,
+            'message' => is_string($content) ? nl2br($content) : $content,
             'type' => $type,
             'user' => array(
                 'name' => $userinfo['NickName'],
-                'Avatar' => $userinfo['Avatar']
+                'avatar' => $userinfo['Avatar']
             )
         ]);
         $members = Redis::zrange("room", 0, -1);
+
         foreach ($members as $fd) {
-            $ws->push($fd, $message);
+            $ws->push(intval($fd), $message);
         }
     }
 }
