@@ -44,12 +44,12 @@
     // 手动发送信息
     $('#send').click(function (e) {
         let data = {
-            message: '嘤嘤嘤嘤嘤嘤嘤',                            //开发先临时写死
+            message: $("#text").val(),
             name: '69831B78F073A55BE8CAA9B8BDED0BA1',           //开发先临时写死
             type: 'message'
         };
         wsServer.send(JSON.stringify(data));
-        // TODO 清空输入框
+        $("#text").val('')                  //清空输入框
     });
 
     // 关闭连接
